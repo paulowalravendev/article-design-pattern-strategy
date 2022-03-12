@@ -1,9 +1,14 @@
+using DesignPatternStrategyDemo.ScenarioOneAndTwo.Strategies.SalesTaxStrategy;
+
 namespace DesignPatternStrategyDemo.ScenarioOneAndTwo.Models;
 
 public class Order
 {
-    public Order(ShippingDetails shippingDetails, decimal price)
+    private readonly ISalesTaxStrategy _taxStrategy;
+
+    public Order(ShippingDetails shippingDetails, decimal price, ISalesTaxStrategy taxStrategy)
     {
+        _taxStrategy = taxStrategy;
         ShippingDetails = shippingDetails;
         Price = price;
     }
@@ -13,35 +18,8 @@ public class Order
 
     public decimal GetTax()
     {
-        var destination = GetShippingDestinationCountry();
-        var origin = GetShippingOriginCountry();
-        if (destination == "sweden")
-        {
-            if (destination == origin)
-            {
-                return Price * .25m;
-            }
-
-            return 0;
-        }
-
-        if (destination == "us")
-        {
-            if (HasShippingDestinationState() == false)
-            {
-                throw new ArgumentException("For calculate US tax destination state is requirement");
-            }
-
-            switch (GetShippingDestinationState())
-            {
-                case "la": return Price * 0.095m;
-                case "ny": return Price * 0.04m;
-                case "nyc": return Price * 0.045m;
-                default: throw new ArgumentException("Invalid destination state for US tax");
-            }
-        }
-
-        throw new NotImplementedException("Only calculate tax from US and Sweden");
+        var tax = _taxStrategy.GetTaxFor(this);
+        return tax > 0 ? tax : throw new Exception("I can't calculate tax");
     }
 
     public string GetShippingDestinationCountry() => ShippingDetails.DestinationCountry.ToLowerInvariant();
