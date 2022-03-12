@@ -1,15 +1,15 @@
-﻿using DesignPatternStrategyDemo.ScenarioOneAndTwo.Models;
-using DesignPatternStrategyDemo.ScenarioOneAndTwo.Strategies.SalesTaxStrategy;
+﻿using DesignPatternStrategyDemo.ScenarioThree.Models;
+using DesignPatternStrategyDemo.ScenarioThree.Strategies;
 
-// Scenario 1 e 2:
-// Contexto: Order
+var notification1 = new Notification("Hello Strategy", new UserNotificationSettings(NotificationChannels.Email));
+var notification2 = new Notification("Hello Strategy", new UserNotificationSettings(NotificationChannels.Sms));
+var notification3 =
+    new Notification("Hello Strategy", new UserNotificationSettings(NotificationChannels.PushNotification));
 
-var order1 = new Order(
-    new ShippingDetails("Sweden", "Sweden"), 100, new SwedenSalesTaxStrategy());
-Console.WriteLine("INFO: {0}", order1);
-Console.WriteLine($"Calculate Order1 Tax: USD: {order1.GetTax()}");
+notification1.NotificationStrategy = new EmailNotificationStrategy();
+notification2.NotificationStrategy = new SmsNotificationStrategy();
+notification3.NotificationStrategy = new PushNotificationStrategy();
 
-var order2 = new Order(new ShippingDetails(
-    "Sweden", "US", "NYC"), 100, new UsSalesTaxStrategy());
-Console.WriteLine("INFO: {0}", order2);
-Console.WriteLine($"Calculate Order2 Tax: USD: {order2.GetTax()}");
+notification1.Send();
+notification2.Send();
+notification3.Send();
